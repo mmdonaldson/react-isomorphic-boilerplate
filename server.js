@@ -9,9 +9,9 @@ const path = require('path');
 const webpack = require('webpack');
 const ReactDOMServer = require('react-dom/server');
 const ReactRouter = require('react-router');
-const config = require('./webpack.config.dev');
+const config = require('./webpack.config');
 
-const RouterContext = require('./RouterContext.jsx');
+const RouterContext = require('./routerContext');
 
 const app = express();
 const compiler = webpack(config);
