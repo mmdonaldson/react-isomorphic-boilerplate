@@ -12,6 +12,7 @@ module.exports = {
     filename: 'bundle.js',
   },
   plugins: [
+    require('autoprefixer'),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
