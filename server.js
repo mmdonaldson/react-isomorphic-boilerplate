@@ -1,24 +1,32 @@
+import express from 'express';
+import exphbs from 'express-handlebars';
+import path from 'path';
+import webpack from 'webpack';
+import Server from 'react-dom/server';
+import { RouterContext } from 'react-router';
+import { Provider } from 'react-redux';
+import React from 'react';
+import { createStore } from 'redux';
+import config from './webpack.config';
 import routes from './src/routes';
+import reducers from './src/reducers';
 
-// Babel ES6/JSX Compiler
-require('babel-register');
-
-const exphbs = require('express-handlebars');
-const express = require('express');
-const path = require('path');
-const webpack = require('webpack');
-const ReactDOMServer = require('react-dom/server');
 const ReactRouter = require('react-router');
-const config = require('./webpack.config');
-
-const RouterContext = require('./routerContext');
 
 const app = express();
 const compiler = webpack(config);
 
-app.engine('.hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
-app.set('view engine', '.hbs');
+// handlebars helpers
+const hbs = exphbs.create({
+  helpers: {
+    stringify: function (something) { return JSON.stringify(something).replace(/</g, '\\u003c'); },
+  },
+  defaultLayout: 'main',
+  extname: '.hbs',
+});
 
+app.engine('.hbs', hbs.engine);
+app.set('view engine', '.hbs');
 
 const middleware = require('webpack-dev-middleware')(compiler, {
   publicPath: config.output.publicPath,
@@ -29,13 +37,13 @@ const middleware = require('webpack-dev-middleware')(compiler, {
     timings: true,
     chunks: false,
     chunkModules: false,
-    modules: false
-  }
+    modules: false,
+  },
 });
 
 app.use(middleware);
 app.use(require('webpack-hot-middleware')(compiler, {
-  log: console.log
+  log: console.log,
 }));
 
 // universal routing and rendering
@@ -52,21 +60,25 @@ app.get('*', (req, res) => {
       if (redirect) {
         return res.redirect(302, redirect.pathname + redirect.search);
       }
+      // Set the initial state from our Redux store
+      const preloadedState = {};
 
-      // generate the React markup for the current route
-      let markup;
-      if (props) {
-        // if the current route matched we have renderProps
-        markup = ReactDOMServer.renderToString(RouterContext(props));
-      } else {
-        // otherwise we can render a 404 page
-        return res.render('error');
-      }
+      // Create a new Redux store instance
+      const store = createStore(reducers, preloadedState);
+
+      // Render the component to a string
+      const html = Server.renderToString(
+        <Provider store={store}>
+          <RouterContext {...props} />
+        </Provider>
+      );
+
       // render the index template with the embedded React markup
-      return res.render('home', { markup });
+      return res.render('home', { markup: html, preloadedState });
     },
   );
 });
+
 
 app.use(express.static(path.join(__dirname, '/dist')));
 

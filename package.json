@@ -8,7 +8,7 @@
   },
   "betterScripts": {
     "start": {
-      "command": "babel-node server",
+      "command": "nodemon server --exec babel-node",
       "env": {
         "NODE_ENV": "development"
       }
