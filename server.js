@@ -61,7 +61,9 @@ app.get('*', (req, res) => {
         return res.redirect(302, redirect.pathname + redirect.search);
       }
       // Set the initial state from our Redux store
-      const preloadedState = {};
+      const preloadedState = {
+        data: 'Hello World!',
+      };
 
       // Create a new Redux store instance
       const store = createStore(reducers, preloadedState);

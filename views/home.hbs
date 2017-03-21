@@ -9,6 +9,10 @@
 </head>
 <body>
   <div id="app">{{{ markup }}}</div>
+  <script>
+  var state = {{{stringify preloadedState}}};
+  window.__PRELOADED_STATE__ = state;
+  </script>
   <script src="bundle.js"></script>
 </body>
 </html>
