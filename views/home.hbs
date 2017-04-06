@@ -1,18 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>{{ title }}</title>
-  <meta name="description" content="React, Webpack, Express, PostCSS starter template">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+
   <div id="app">{{{ markup }}}</div>
+
   <script>
-  var state = {{{stringify preloadedState}}};
-  window.__PRELOADED_STATE__ = state;
+    var state = {{{stringify preloadedState}}};
+    window.__PRELOADED_STATE__ = state;
   </script>
   <script src="bundle.js"></script>
-</body>
-</html>
